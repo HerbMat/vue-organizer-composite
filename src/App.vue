@@ -1,30 +1,48 @@
 <template>
-  <div id="nav">
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
+  <div id="app">
+    <Header></Header>
+    <main>
+      <router-view/>
+    </main>
   </div>
-  <router-view/>
 </template>
 
+<script lang="ts">
+import { defineComponent } from 'vue'
+import Header from '@/components/Header.vue'
+
+export default defineComponent({
+  name: 'App',
+  components: { Header }
+})
+</script>
+
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+body {
+  margin: 0;
 }
 
-#nav {
-  padding: 30px;
+body > * {
+  overflow: auto;
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+#app {
+  display: grid;
+  grid-template:
+      [row1-start] "header header" 6rem [row1-end]
+      [row2-start] "sidebar content" 1fr [row2-end]
+    / 6rem 1fr;
+  height: 100vh;
+  width: 100vw;
+}
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.row {
+  width: 100%;
+}
+
+#app > main {
+  grid-area: sidebar / sidebar / content / content;
+  text-align: center;
+  padding: 1rem
 }
 </style>

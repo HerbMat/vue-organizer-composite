@@ -1,18 +1,18 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <week-list></week-list>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component'
-import HelloWorld from '@/components/HelloWorld.vue' // @ is an alias to /src
+import { defineComponent } from 'vue'
+import WeekList from '@/components/WeekList.vue'
 
-@Options({
-  components: {
-    HelloWorld
-  }
+export default defineComponent({
+  name: 'Home',
+  components: { WeekList }
 })
-export default class Home extends Vue {}
 </script>
+
+<style scoped lang="scss">
+</style>
