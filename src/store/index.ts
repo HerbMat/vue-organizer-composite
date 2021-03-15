@@ -1,6 +1,5 @@
 import { createStore, useStore as baseUseStore } from 'vuex'
 import weekListStateModule from '@/store/weeklist'
-import timeframeModule from '@/store/timeframe'
 
 export interface State {
   counter: number;
@@ -15,8 +14,7 @@ export default createStore<State>({
   actions: {
   },
   modules: {
-    weekListStateModule,
-    timeframeModule
+    weekListStateModule
   }
 })
 

@@ -10,10 +10,16 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import Header from '@/components/Header.vue'
+import { useStore } from '@/store'
+import { ActionTypes as WeekActionTypes } from '@/store/weeklist'
 
 export default defineComponent({
   name: 'App',
-  components: { Header }
+  components: { Header },
+  setup (props: any) {
+    const store = useStore()
+    store.dispatch(WeekActionTypes.LOAD_INITIAL_STATE)
+  }
 })
 </script>
 

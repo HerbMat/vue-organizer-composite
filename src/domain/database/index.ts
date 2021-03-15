@@ -1,7 +1,10 @@
 import HourDescription from '@/domain/domain/HourDescription'
+import { Days } from '@/domain/domain/Days'
 
 const WEEK_LIST_STORE_OBJECT_NAME = 'weeklist'
 const DATABASE_NAME = 'organizer'
+
+export type SavedHourDescription = Omit<HourDescription, 'selected'>
 
 function onUpgradeNeeded (event: any) {
   const db = event.target.result
@@ -20,29 +23,30 @@ function performOperation (operation: (db: IDBDatabase) => void) {
   dbReq.onupgradeneeded = onUpgradeNeeded
   dbReq.onsuccess = performOperationOnSuccess(operation)
   dbReq.onerror = (event: any) => {
-    alert('error opening database ' + event.target.errorCode)
+    console.log('error opening database ' + event.target.errorCode)
   }
 }
 
-type WeekList = Map<string, Array<HourDescription>>
-
-function saveOperation (weekList: WeekList) {
+function saveOperation (dayHours: SavedHourDescription[], key: string) {
   return (db: IDBDatabase) => {
     const weekListStore = db.transaction([WEEK_LIST_STORE_OBJECT_NAME], 'readwrite').objectStore(WEEK_LIST_STORE_OBJECT_NAME)
-    weekListStore.put(weekList, 1)
+    weekListStore.put(dayHours, key)
   }
 }
 
-export function save (weekList: WeekList) {
-  performOperation(saveOperation(weekList))
+export function save (dayHours: SavedHourDescription[], key: string) {
+  performOperation(saveOperation(dayHours, key))
 }
 
-function loadOperation (operation: (result: Array<WeekList>) => void) {
+function loadOperation (key: string, operation: (result: SavedHourDescription[]) => void) {
   return (db: IDBDatabase) => {
     const weekListStore = db.transaction([WEEK_LIST_STORE_OBJECT_NAME], 'readonly').objectStore(WEEK_LIST_STORE_OBJECT_NAME)
-    const request = weekListStore.getAll()
+    const request = weekListStore.get(key)
     request.onsuccess = () => {
-      operation(request.result)
+      const result = request.result
+      if (result !== undefined) {
+        operation(request.result)
+      }
     }
     request.onerror = (event: any) => {
       alert('error loading ' + event.target.errorCode)
@@ -50,6 +54,6 @@ function loadOperation (operation: (result: Array<WeekList>) => void) {
   }
 }
 
-export function loadSaveData (operation: (result: Array<WeekList>) => void): void {
-  performOperation(loadOperation(operation))
+export function loadSaveData (key: string, operation: (result: SavedHourDescription[]) => void): void {
+  performOperation(loadOperation(key, operation))
 }

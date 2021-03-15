@@ -2,8 +2,13 @@
   <div>
     <h2>{{ day }}</h2>
     <ul class="day-list">
-      <li v-for="hourDesc in dayList" :key="hourDesc.startHour" @click="showModal(hourDesc.startHour)">
-        {{ formatHour(hourDesc.startHour) }} - {{ formatHour(hourDesc.endHour) }} {{ hourDesc.description }}
+      <li v-for="hourDesc in dayList" :key="hourDesc.startHour">
+        <span @click="showModal">
+          {{ formatHour(hourDesc.startHour) }} - {{ formatHour(hourDesc.endHour) }} {{ hourDesc.description }}
+        </span>
+        <label>
+          <input type="checkbox" :checked="hourDesc.selected" @change="selectElement(hourDesc.startHour)"/>
+        </label>
       </li>
     </ul>
   </div>
@@ -13,8 +18,7 @@
 import { defineComponent, reactive } from 'vue'
 import { useStore } from '@/store'
 import { formatHour } from '@/domain/util/dateFormatter'
-import { ActionTypes } from '@/store/timeframe'
-import { ActionTypes as WeekActionTypes } from '@/store/weeklist'
+import { ActionTypes } from '@/store/weeklist'
 
 export default defineComponent({
   name: 'DayToDoList',
@@ -26,20 +30,24 @@ export default defineComponent({
   },
   setup (props, { emit }) {
     const store = useStore()
-    store.dispatch(WeekActionTypes.LOAD_INITIAL_STATE)
     const dayList = reactive(store.getters.getDay(props.day))
-    function showModal (hour: number) {
-      store.dispatch(ActionTypes.SET_TIMEFRAME, {
+    function showModal () {
+      emit('showModal')
+    }
+
+    function selectElement (hour: number) {
+      store.dispatch(ActionTypes.SELECT_TIMEFRAME, {
         day: props.day,
         startHour: hour
       })
-      emit('showModal')
+      console.log('Selected' + hour + props.day)
     }
 
     return {
       dayList,
       showModal,
-      formatHour
+      formatHour,
+      selectElement
     }
   }
 })
